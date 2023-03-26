@@ -1,13 +1,6 @@
 import pygame, sys
-
 pygame.init()
-
-# värvid
-red = [255, 0, 0]
-green = [0, 255, 0]
-blue = [0, 0, 255]
-pink = [255, 153, 255]
-lGreen = [153, 255, 153]
+#värv
 lBlue = [153, 204, 255]
 
 # ekraani seaded
@@ -17,14 +10,21 @@ screen = pygame.display.set_mode([screenX, screenY])
 pygame.display.set_caption("Animeerimine")
 screen.fill(lBlue)
 clock = pygame.time.Clock()
-
-# graafika laadimine
-ball = pygame.image.load("ball.png")
-pad = pygame.image.load("pad.png")
+score = 0
 
 # kiirus ja asukoht
 posX, posY = 0, 0
 speedX, speedY = 3, 4
+speedX2, speedY2 = 3,0
+posX2,posY2 = 300,400
+
+#pildid
+ball = pygame.image.load("ball.png")
+ball = pygame.transform.scale(ball, [20,20])
+ball_rect = pygame.Rect(posX,posY,20,20)
+pad = pygame.image.load("pad.png")
+pad = pygame.transform.scale(pad, [120,20])
+pad_rect = pygame.Rect(posX2,posY2,120,20)
 
 gameover = False
 while not gameover:
@@ -35,23 +35,32 @@ while not gameover:
     for i in pygame.event.get():
         if i.type == pygame.QUIT:
             sys.exit()
-
     # pildi lisamine ekraanile
     screen.blit(ball, (posX, posY))
-    screen.blit(pad, (200, 350))
-
+    screen.blit(pad, (posX2, posY2))
+    pall = pygame.Rect(posX,posY,20,20)
+    pad_rect = pygame.Rect(posX2, posY2, 120, 20)
+    #pall
     posX += speedX
     posY += speedY
-
-    # kui puudub ääri, siis muudab suunda
+    posX2 += speedX2
+    posY2 += speedY2
+    #Score
+    screen.blit(pygame.font.Font(None, 30).render(f"Score: {score}", True, [255, 255, 255]),
+                [10, 20])
     if posX > screenX - ball.get_rect().width or posX < 0:
         speedX = -speedX
-
     if posY > screenY - ball.get_rect().height or posY < 0:
         speedY = -speedY
+    if posY > screenY -ball.get_rect().height:
+        score-=1
+    if posX2 > screenX - pad.get_rect().width or posX2 < 0:
+        speedX2 = -speedX2
 
-    # graafika kuvamine ekraanil
+    if pall.colliderect(pad_rect) and speedY > 0:
+        speedY = -speedY
+        score +=1
+
     pygame.display.flip()
     screen.fill(lBlue)
-
 pygame.quit()
